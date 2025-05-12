@@ -11,10 +11,13 @@
         <nav>
             <a href="{{ route('main') }}">Мои документы</a> |
             <a href="{{ route('document.create') }}">Создать</a> |
-            {{-- <form action="{{ route('logout') }}" method="POST" style="display:inline;">
+            @auth
+            <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit">Выйти</button>
-            </form> --}}
+            </form>
+            @endauth
+
         </nav>
     </header>
 
