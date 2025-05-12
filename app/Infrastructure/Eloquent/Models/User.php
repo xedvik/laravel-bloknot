@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-
+use Database\Factories\UserFactory;
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
@@ -43,7 +43,12 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    public function document(){
+    public static function newFactory(): UserFactory
+    {
+        return UserFactory::new();
+    }
+    public function document()
+    {
         return $this->hasMany(Document::class);
     }
 }
