@@ -3,13 +3,13 @@ namespace App\Infrastructure\Eloquent\Repositories;
 
 use App\Domains\Auth\Repositories\UserRepositoryInterface;
 use App\Domains\Auth\Entities\User;
-use App\Infrastructure\Eloquent\Models\User as EloquentUser;
+use App\Infrastructure\Eloquent\Models\User as UserModel;
 
 class UserRepository implements UserRepositoryInterface {
 
-    public function create(User $user): EloquentUser
+    public function create(User $user): UserModel
     {
-        $eloquentUser = EloquentUser::create([
+        $eloquentUser = UserModel::create([
             'name' => $user->name,
             'email' => $user->email,
             'password' => $user->password
@@ -18,14 +18,14 @@ class UserRepository implements UserRepositoryInterface {
         return $eloquentUser;
     }
 
-    public function getModelById($id): EloquentUser|null
+    public function getModelById($id): UserModel|null
     {
-        return EloquentUser::find($id);
+        return UserModel::find($id);
     }
 
     public function findByEmail($email): ?User
     {
-        $model = EloquentUser::where('email', $email)->first();
+        $model = UserModel::where('email', $email)->first();
         if(!$model) return null;
         return new User(
             id: $model->id,

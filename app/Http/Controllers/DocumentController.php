@@ -22,7 +22,7 @@ class DocumentController extends Controller
     public function store(DocumentRequest $documentRequest, CreateDocumentUseCase $createDocument)
     {
         $dto = new DocumentDTO(
-            userId: '1',//$documentRequest-> //auth()->id,
+            userId: auth()->id(),
             title: $documentRequest->input('title'),
             content: $documentRequest->input('content')
         );
