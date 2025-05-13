@@ -2,7 +2,6 @@
 namespace App\Domains\Auth\UseCases;
 use App\Domains\Auth\DTO\LoginDTO;
 use App\Domains\Auth\DTO\LoginResponseDTO;
-use App\Domains\Auth\Entities\User;
 use App\Domains\Auth\Repositories\UserRepositoryInterface;
 use App\Domains\Auth\Services\PasswordHasher;
 class LoginUserUseCase

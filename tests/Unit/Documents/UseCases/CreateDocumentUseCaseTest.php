@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Documents\UseCases;
 
-use PHPUnit\Framework\TestCase;
+
 use App\Domains\Documents\UseCases\CreateDocumentUseCase;
 use App\Domains\Documents\Repositories\DocumentRepositoryInterface;
 use App\Domains\Documents\Services\DocumentSanitizer;
