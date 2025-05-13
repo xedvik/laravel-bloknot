@@ -1,21 +1,21 @@
 <?php
+namespace App\Infrastructure\Eloquent\Factories;
 
-namespace Database\Factories;
-
+use App\Domains\Auth\DTO\RegisterDTO;
+use App\Domains\Auth\Entities\User;
+use App\Domains\Auth\Factories\UserFactoryInterface;
+use App\Domains\Auth\Services\PasswordHasher;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use App\Infrastructure\Eloquent\Models\User;
+use App\Infrastructure\Eloquent\Models\User as UserModel;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Infrastructure\Eloquent\Models\User>
  */
-class UserFactory extends Factory
+class UserFactory  extends Factory implements UserFactoryInterface
 {
-    /**
-     * The current password being used by the factory.
-     */
-    protected $model = User::class;
+    protected $model = UserModel::class;
     protected static ?string $password;
 
     /**
@@ -42,5 +42,14 @@ class UserFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
         ]);
+    }
+    public function createFromDTO(RegisterDTO $dto, PasswordHasher $hasher): User
+    {
+        return new User(
+            id: 0,
+            name: $dto->name,
+            email: $dto->email,
+            password: $hasher->hash($dto->password)
+        );
     }
 }

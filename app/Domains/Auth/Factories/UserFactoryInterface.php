@@ -8,4 +8,6 @@ use App\Domains\Auth\Services\PasswordHasher;
 interface UserFactoryInterface
 {
     public function createFromDTO(RegisterDTO $dto, PasswordHasher $hasher): User;
+    public function definition(): array;
+    public function unverified(): static;
 }

@@ -4,12 +4,13 @@ use App\Domains\Documents\Repositories\DocumentRepositoryInterface;
 use App\Domains\Documents\DTO\DocumentDTO;
 use App\Domains\Documents\DTO\DocumentResponseDTO;
 use App\Domains\Documents\Services\DocumentSanitizer;
-use App\Domains\Documents\Factories\DocumentFactory;
+use App\Domains\Documents\Factories\DocumentFactoryInterface;
 class CreateDocumentUseCase
 {
     public function __construct(
         private DocumentRepositoryInterface $documentRepository,
         private DocumentSanitizer $documentSanitizer,
+        private DocumentFactoryInterface $documentFactory,
     ) {
     }
 
@@ -23,7 +24,7 @@ class CreateDocumentUseCase
             );
         }
         $cleanHtml = $this->documentSanitizer->sanitize($documentDTO->content);
-        $document = DocumentFactory::createFromDTO($documentDTO, $cleanHtml);
+        $document = $this->documentFactory->createFromDTO($documentDTO, $cleanHtml);
         $this->documentRepository->save($document);
 
         return new DocumentResponseDTO(
@@ -31,6 +32,5 @@ class CreateDocumentUseCase
             message: 'Document created successfully',
             document: $document
         );
-        // return $document;
     }
 }
