@@ -1,12 +1,11 @@
 <?php
 
-namespace Tests\Unit\Documents\UseCases;
+namespace Tests\Unit\UseCases\Auth;
 
 use App\Domains\Auth\UseCases\RegisterUserUseCase;
 use App\Domains\Auth\Repositories\UserRepositoryInterface;
 use App\Domains\Auth\Services\PasswordHasher;
 use App\Domains\Auth\DTO\RegisterDTO;
-use App\Domains\Auth\DTO\RegisterResponseDTO;
 use App\Domains\Auth\Factories\UserFactoryInterface;
 use App\Domains\Auth\Entities\User;
 use App\Infrastructure\Eloquent\Models\User as UserModel;

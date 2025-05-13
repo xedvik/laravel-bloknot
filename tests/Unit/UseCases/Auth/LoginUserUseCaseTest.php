@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Documents\UseCases;
+namespace Tests\Unit\UseCases\Auth;
 
 use App\Domains\Auth\UseCases\LoginUserUseCase;
 use App\Domains\Auth\Repositories\UserRepositoryInterface;

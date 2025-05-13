@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Documents\UseCases;
+namespace Tests\Unit\UseCases\Documents;
 
 
 use App\Domains\Documents\UseCases\CreateDocumentUseCase;
@@ -9,6 +9,7 @@ use App\Domains\Documents\Services\DocumentSanitizer;
 use App\Domains\Documents\DTO\DocumentDTO;
 use App\Domains\Documents\DTO\DocumentResponseDTO;
 use App\Domains\Documents\Entities\Document;
+use App\Domains\Documents\Factories\DocumentFactoryInterface;
 use Mockery;
 use Mockery\MockInterface;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
@@ -26,6 +27,8 @@ class CreateDocumentUseCaseTest extends MockeryTestCase
             title: 'test title',
             content: '<b>content</b>'
         );
+         /** @var DocumentFactoryInterface&MockInterface $documentFactoryMock */
+         $documentFactoryMock = Mockery::mock(DocumentFactoryInterface::class);
 
         /** @var DocumentRepositoryInterface&MockInterface $repositoryMock */
         $repositoryMock = Mockery::mock(DocumentRepositoryInterface::class);
@@ -34,7 +37,11 @@ class CreateDocumentUseCaseTest extends MockeryTestCase
         /** @var DocumentSanitizer&MockInterface $sanitizeMock */
         $sanitizeMock = Mockery::mock(DocumentSanitizer::class);
 
-        $useCase = new CreateDocumentUseCase($repositoryMock, $sanitizeMock);
+        $useCase = new CreateDocumentUseCase(
+            documentRepository: $repositoryMock,
+            documentSanitizer: $sanitizeMock,
+            documentFactory: $documentFactoryMock,
+        );
         $result = $useCase->execute($dto);
         $this->assertFalse($result->success);
         $this->assertEquals('Document with this title already exists.', $result->message);
@@ -43,36 +50,41 @@ class CreateDocumentUseCaseTest extends MockeryTestCase
     public function testCreateDocument()
     {
 
-        // 1. Создаем DTO с входными данными
         $dto = new DocumentDTO(
             userId: 1,
             title: 'test',
             content: '<b>content</b>'
         );
-        // 2. Мокаем DocumentRepositoryInterface
-        /** @var DocumentRepositoryInterface&MockInterface $repositoryMock */
+        $mockDocument = new Document(
+            id: 1,
+            userId: 1,
+            title: 'test',
+            content: '<b>content</b>',
+        );
 
+         /** @var DocumentSanitizer&MockInterface $sanitizeMock */
+         $sanitizeMock = Mockery::mock(DocumentSanitizer::class);
+         $sanitizeMock->shouldReceive('sanitize')->once()->with($dto->content)->andReturn('<b>content</b>');
+
+         /** @var DocumentFactoryInterface&MockInterface $documentFactoryMock */
+         $documentFactoryMock = Mockery::mock(DocumentFactoryInterface::class);
+         $documentFactoryMock->shouldReceive('createFromDTO')->once()->with($dto, '<b>content</b>')->andReturn($mockDocument);
+
+        /** @var DocumentRepositoryInterface&MockInterface $repositoryMock */
         $repositoryMock = Mockery::mock(DocumentRepositoryInterface::class);
         $repositoryMock->shouldReceive('existsByTitle')->once()->with('test', 1)->andReturn(false);
         $repositoryMock->shouldReceive('save')->once()->withArgs(function (Document $document) use ($dto) {
             return $document->userId === $dto->userId && $document->title === $dto->title;
         })->andReturn(true);
 
-        // 3. Мокаем DocumentSanitizer
-        /** @var DocumentSanitizer&MockInterface $sanitizeMock */
-        $sanitizeMock = Mockery::mock(DocumentSanitizer::class);
-        $sanitizeMock->shouldReceive('sanitize')->once()->with($dto->content)->andReturn('<b>content</b>');
-
-        // 4. Создаем экземпляр use case с моками
         $useCase = new CreateDocumentUseCase(
             documentRepository: $repositoryMock,
-            documentSanitizer: $sanitizeMock
+            documentSanitizer: $sanitizeMock,
+            documentFactory: $documentFactoryMock,
         );
 
-        // 5. Выполняем Use Case
         $response = $useCase->execute($dto);
 
-        // 6. Проверяем результат (тип, статус, сообщение)
         $this->assertInstanceOf(DocumentResponseDTO::class, $response);
         $this->assertTrue($response->success);
         $this->assertEquals('Document created successfully', $response->message);
